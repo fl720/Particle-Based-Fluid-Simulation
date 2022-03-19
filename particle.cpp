@@ -19,7 +19,7 @@ Particle::Particle(vector3d input_pos)
     v = vector3d() ; 
 }
 
-void Particle::update(double dt, std::set<Particle> &surrounding_particles,  parameter p) 
+void Particle::update(double dt, std::set<Particle> &surrounding_particles,  parameter p , vector3d volume) 
 {  
     // accelerate
     vector3d g(0, 0, -p.g);
@@ -31,6 +31,41 @@ void Particle::update(double dt, std::set<Particle> &surrounding_particles,  par
     // move
     pos         = pos + v * dt + a * dt * dt / 2; 
     v           = v + a * dt ; 
+
+    // bouce back
+
+    if ( pos.x > volume.x )
+    {
+        v.x = - v.x ;
+        pos.x = 2 * volume.x - pos.x;
+    } 
+    if ( pos.x < 0 )
+    {
+        v.x = - v.x ;
+        pos.x = - pos.x;
+    } 
+
+    if ( pos.y > volume.y  )
+    {
+        v.y = - v.y ;
+        pos.y = 2 * volume.y - pos.y;
+    }
+    if ( pos.y < 0 )
+    {
+        v.y = - v.y ;
+        pos.y = - pos.y;
+    }
+
+    if ( pos.z > volume.z  ) 
+    {
+        v.z = - v.z ;
+        pos.z = 2 * volume.z - pos.z;
+    }
+    if ( pos.z < 0 ) 
+    {
+        v.z = - v.z ;
+        pos.z = - pos.z;
+    }
 }
 
 double Particle::distance_squre(vector3d s) 

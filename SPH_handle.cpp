@@ -1,4 +1,5 @@
 #include "SPH_handle.h"
+#include <iostream>
 
 void SPH_handle::set_export_file( const char * path )
 {
@@ -19,6 +20,8 @@ void SPH_handle::run(unsigned int step )
     total_step += step ; 
     for( int i = 0 ; i < step ; i++) 
     {
+        if(i % 100 == 0) std::cout << i << std::endl;
+
         // TODO: save surrounding_particles
         for(int j = 0 ; j < particle_number ; j++)
         {
@@ -63,13 +66,15 @@ void SPH_handle::run(unsigned int step )
             {
                 for(unsigned int p : particle_list[cubic[k]] )
                 {
-                    if( particles[j].distance_squre(particles[p].pos) < para.h * para.h) 
+                    if( particles[j].distance_squre(particles[p].pos) < para.h * para.h &&
+                        j != p
+                    ) 
                         surrounding_particles.insert(particles[p]) ;   
                 }
             }     
 
             particle_list[particles[j].get_grid(para.h)].erase(j) ;
-            particles[j].update(dt, surrounding_particles, para); 
+            particles[j].update(dt, surrounding_particles, para , volume); 
             particle_list[particles[j].get_grid(para.h)].insert(j) ; 
             fwrite( &(particles[j].pos), sizeof(particles[j].pos), 1, fp); 
         }
@@ -87,7 +92,7 @@ SPH_handle::SPH_handle( int number , double le, double wi , double he) {
     para.h           = 0.16; // kernel radius
     para.rho0        = 998 ; // rest density    
     para.miu         = 100; // viscosity
-    para.k           = 138; // ideal gas constant
+    para.k           = 13.8; // ideal gas constant
     para.sigma       = 72.75; // tension coefficient
     para.g           = 9.81 ; // gravitational constant 
     
