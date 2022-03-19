@@ -35,9 +35,10 @@ void SPH_handle::run(unsigned int step )
             cubic[6].z -= 1 ;    
             for(int k = 0 ; k < 7 ; k++)
             {
-                for(auto &p : particle_list[cubic[k]] )
+                for(unsigned int p : particle_list[cubic[k]] )
                 {
-                    if( particles[j].distance_squre(p.pos) < para.h * para.h ) surrounding_particles.insert(p) ;   
+                    if( particles[j].distance_squre(particles[p].pos) < para.h * para.h ) 
+                        surrounding_particles.insert(particles[p]) ;   
                 }
             }     
                         
@@ -56,18 +57,20 @@ void SPH_handle::run(unsigned int step )
             cubic[3].y += 1 ; 
             cubic[4].y -= 1 ; 
             cubic[5].z += 1 ; 
-            cubic[6].z -= 1 ;    
+            cubic[6].z -= 1 ;  
+            // 'rho's in particles[] has been updated nor in particle_list
             for(int k = 0 ; k < 7 ; k++)
             {
-                for(auto &p : particle_list[cubic[k]] )
+                for(unsigned int p : particle_list[cubic[k]] )
                 {
-                    if( particles[j].distance_squre(p.pos) < para.h * para.h ) surrounding_particles.insert(p) ;   
+                    if( particles[j].distance_squre(particles[p].pos) < para.h * para.h) 
+                        surrounding_particles.insert(particles[p]) ;   
                 }
             }     
 
-            particle_list[particles[j].get_grid(para.h)].erase(particles[j]) ;
-            particles[j].update(dt , surrounding_particles, para); 
-            particle_list[particles[j].get_grid(para.h)].insert(particles[j]) ; 
+            particle_list[particles[j].get_grid(para.h)].erase(j) ;
+            particles[j].update(dt, surrounding_particles, para); 
+            particle_list[particles[j].get_grid(para.h)].insert(j) ; 
             fwrite( &(particles[j].pos), sizeof(particles[j].pos), 1, fp); 
         }
     }
@@ -81,10 +84,10 @@ SPH_handle::SPH_handle( int number , double le, double wi , double he) {
 
     fp          = nullptr;
         
-    para.h           = 1; // kernel radius
+    para.h           = 0.16; // kernel radius
     para.rho0        = 998 ; // rest density    
-    para.miu         = 1; // viscosity
-    para.k           = 1.38 * 1e-23; // ideal gas constant
+    para.miu         = 100; // viscosity
+    para.k           = 138; // ideal gas constant
     para.sigma       = 72.75; // tension coefficient
     para.g           = 9.81 ; // gravitational constant 
     
@@ -100,7 +103,7 @@ SPH_handle::SPH_handle( int number , double le, double wi , double he) {
 
         Particle tmp( vector3d(le_pos, wi_pos, he_pos) );
         particles.push_back(tmp);
-        particle_list[tmp.get_grid(para.h)].insert(tmp);
+        particle_list[tmp.get_grid(para.h)].insert(it);
     }
 }
 
