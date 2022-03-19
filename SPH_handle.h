@@ -27,8 +27,9 @@ class SPH_handle
         parameter para;
 
         unsigned int particle_number;
+
         std::vector<Particle> particles;
-        std::map<cubic_zone , std::set<Particle> > particle_list; // spatial hash 
+        std::map<cubic_zone , std::set<unsigned int> > particle_list; // spatial hash 
 
 };
 

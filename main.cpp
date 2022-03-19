@@ -2,9 +2,9 @@
 
 int main()
 {   
-    SPH_handle simulator(10, 100, 100, 100);
+    SPH_handle simulator(10, 12, 9, 9);
     simulator.set_export_file("data.bin");
-    simulator.run(10);
+    simulator.run(1000);
 
     return 0;
 }
