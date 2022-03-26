@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "__split_buffer": "cpp",
+        "__tree": "cpp",
+        "functional": "cpp",
+        "memory": "cpp",
+        "set": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "typeinfo": "cpp",
+        "vector": "cpp",
+        "fstream": "cpp",
+        "iosfwd": "cpp",
+        "ostream": "cpp"
+    }
+}

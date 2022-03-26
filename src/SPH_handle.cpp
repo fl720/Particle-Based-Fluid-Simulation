@@ -83,24 +83,35 @@ void SPH_handle::run(unsigned int step )
     return ;
 }
 
-SPH_handle::SPH_handle( int number , double le, double wi , double he) {
-    total_step  = 1 ; 
-    dt          = 0.001 ; 
+SPH_handle::SPH_handle( std::string filename) {
 
+    double he;
+    double wi;
+    double le;
+
+    std::ifstream input_file(filename);
+    
+    if (input_file.good() )
+    {
+        input_file >> particle_number;
+        input_file >> he; 
+        input_file >> wi;
+        input_file >> le; 
+        input_file >> dt;
+        input_file >> para.h;
+        input_file >> para.rho0; 
+        input_file >> para.miu ; 
+        input_file >> para.k ;
+        input_file >> para.sigma ;
+        input_file >> para.g ; 
+    }
+
+    total_step  = 1 ; 
     fp          = nullptr;
-        
-    para.h           = 0.16; // kernel radius
-    para.rho0        = 998 ; // rest density    
-    para.miu         = 100; // viscosity
-    para.k           = 13.8; // ideal gas constant
-    para.sigma       = 72.75; // tension coefficient
-    para.g           = 9.81 ; // gravitational constant 
     
     volume      = vector3d(le, wi, he) ; 
-
-    particle_number = number ;
     srand(time(0));
-    for(int it = 0; it < number; it++)
+    for(int it = 0; it < particle_number; it++)
     {
         double he_pos = he/3 + static_cast <double> (rand()) /( static_cast <double> (RAND_MAX/(he/3)));
         double wi_pos = wi/3 + static_cast <double> (rand()) /( static_cast <double> (RAND_MAX/(wi/3)));

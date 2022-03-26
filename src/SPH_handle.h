@@ -4,13 +4,16 @@
 #include <time.h> 
 #include <set>
 #include <random>
+#include <fstream>
+#include <string>
 #include "particle.h"
 
 class SPH_handle
 {
     public:
-    
-        SPH_handle(int number, double he = 100, double wi = 100, double le = 100);
+
+        SPH_handle(std::string filename) ; 
+        //SPH_handle(int number, double he = 100, double wi = 100, double le = 100);
         ~SPH_handle();
 
         void set_export_file(const char * path);
