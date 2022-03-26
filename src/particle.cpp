@@ -24,7 +24,10 @@ void Particle::update(double dt, std::set<Particle> &surrounding_particles,  par
     // accelerate
     vector3d g(0, 0, -p.g);
     
-    vector3d f  = get_pressure(surrounding_particles , p) + (g * rho) + get_viscosity(surrounding_particles , p)  ;
+    vector3d f = get_pressure(surrounding_particles , p)
+        + get_viscosity(surrounding_particles , p)
+        + get_tension(surrounding_particles , p) 
+        + (g * rho) ;
     
     vector3d a  = f / rho ;
     
@@ -118,6 +121,17 @@ vector3d Particle::get_tension(std::set<Particle> &surrounding_particle, paramet
 {
     vector3d f;
 
+    vector3d cs_grad; // n
+    double cs_lap;
+
+    for (auto &pa : surrounding_particle)
+    {
+        cs_grad += kernal_poly6_gradient( pos - pa.pos , p.h ) * pa.m / pa.rho ;
+        cs_lap  += kernal_poly6_laplacian( pos - pa.pos , p.h ) * pa.m / pa.rho ; 
+    }
+
+    f = (cs_grad / cs_grad.abs()) * (- p.sigma) * cs_lap ;
+
     return f;
 }
 
@@ -126,6 +140,18 @@ double Particle::kernel_poly6(vector3d r , double h )
     double r_abs = r.abs();
     if( h < r_abs ) return 0 ; 
     return 315*(h*h - r_abs*r_abs)*(h*h - r_abs*r_abs)*(h*h - r_abs*r_abs) / ( 64*M_PI*pow(h,9) )  ;
+}
+
+vector3d Particle::kernal_poly6_gradient(vector3d r , double h )
+{
+    double r_abs = r.abs();
+    return r * -945.0/ ( 32.0 * M_PI * pow(h,9) ) * pow((h*h - r_abs * r_abs ), 2) ;
+}
+
+double Particle::kernal_poly6_laplacian(vector3d r , double h )
+{
+    double r_abs = r.abs() ; 
+    return - 945.0 / ( 32.0 * M_PI * pow(h, 9) ) * ( r_abs * r_abs - h * h ) * ( 4 * r_abs * r_abs + 3 * (r_abs * r_abs - h * h )); 
 }
 
 vector3d Particle::kernel_spiky_gradient(vector3d r , double h )

@@ -56,6 +56,8 @@ private:
     vector3d get_tension(std::set<Particle> &surrounding_particle, parameter &p);
 
     double kernel_poly6(vector3d r ,double h);
+    vector3d kernal_poly6_gradient(vector3d r , double h );
+    double kernal_poly6_laplacian(vector3d r , double h );
     vector3d kernel_spiky_gradient(vector3d r, double h);
     double kernel_viscosity_laplacian(vector3d r, double h);
 
