@@ -22,11 +22,11 @@ void SPH_handle::run(unsigned int step )
     {
         if(i % 100 == 0) std::cout << i << std::endl;
 
-        // TODO: save surrounding_particles
+        std::vector< std::set< int > >  particle_collection ; 
+        
         for(int j = 0 ; j < particle_number ; j++)
         {
-            std::set<Particle> surrounding_particles;
-            
+            std::set<int> surrounding_particles;
             cubic_zone cubic[7];
             cubic[0] = particles[j].get_grid(para.h) ; 
             for(int k = 1 ; k < 7; k++) cubic[k] = cubic[0];
@@ -41,40 +41,18 @@ void SPH_handle::run(unsigned int step )
                 for(unsigned int p : particle_list[cubic[k]] )
                 {
                     if( particles[j].distance_squre(particles[p].pos) < para.h * para.h ) 
-                        surrounding_particles.insert(particles[p]) ;   
+                        surrounding_particles.insert( p ) ;   
                 }
-            }     
-                        
-            particles[j].rho = particles[j].get_rho(surrounding_particles, para.h ); 
+            }   
+            particle_collection.push_back( surrounding_particles ) ; 
+            particles[j].rho = particles[j].get_rho(surrounding_particles,particles, para ); 
         }
 
         for(int j = 0 ; j < particle_number; j++ )
-        {
-            std::set<Particle> surrounding_particles;
-            
-            cubic_zone cubic[7];
-            cubic[0] = particles[j].get_grid(para.h) ; 
-            for(int k = 1 ; k < 7; k++) cubic[k] = cubic[0];
-            cubic[1].x += 1 ; 
-            cubic[2].x -= 1 ; 
-            cubic[3].y += 1 ; 
-            cubic[4].y -= 1 ; 
-            cubic[5].z += 1 ; 
-            cubic[6].z -= 1 ;  
-            // 'rho's in particles[] has been updated nor in particle_list
-            for(int k = 0 ; k < 7 ; k++)
-            {
-                for(unsigned int p : particle_list[cubic[k]] )
-                {
-                    if( particles[j].distance_squre(particles[p].pos) < para.h * para.h &&
-                        j != p
-                    ) 
-                        surrounding_particles.insert(particles[p]) ;   
-                }
-            }     
-
+        {   
+            particle_collection[j].erase(j) ;
             particle_list[particles[j].get_grid(para.h)].erase(j) ;
-            particles[j].update(dt, surrounding_particles, para , volume); 
+            particles[j].update(particle_collection[j],particles, dt,  para , volume); 
             particle_list[particles[j].get_grid(para.h)].insert(j) ; 
             fwrite( &(particles[j].pos), sizeof(particles[j].pos), 1, fp); 
         }
@@ -118,7 +96,7 @@ SPH_handle::SPH_handle( std::string filename) {
         double le_pos = le/3 + static_cast <double> (rand()) /( static_cast <double> (RAND_MAX/(le/3)));
 
         Particle tmp( vector3d(le_pos, wi_pos, he_pos) );
-        particles.push_back(tmp);
+        particles.push_back(tmp); // tmp -> it
         particle_list[tmp.get_grid(para.h)].insert(it);
     }
 }

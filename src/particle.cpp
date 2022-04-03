@@ -19,14 +19,14 @@ Particle::Particle(vector3d input_pos)
     v = vector3d() ; 
 }
 
-void Particle::update(double dt, std::set<Particle> &surrounding_particles,  parameter p , vector3d volume) 
+void Particle::update( std::set<int> &surrounding_particles, std::vector<Particle> &particles,  double dt, parameter &p , vector3d volume) 
 {  
     // accelerate
     vector3d g(0, 0, -p.g);
-    
-    vector3d f = get_pressure(surrounding_particles , p)
-        + get_viscosity(surrounding_particles , p)
-        + get_tension(surrounding_particles , p) 
+
+    vector3d f = get_pressure(surrounding_particles, particles , p)
+        + get_viscosity(surrounding_particles, particles , p)
+        + get_tension(surrounding_particles, particles , p) 
         + (g * rho) ;
     
     vector3d a  = f / rho ;
@@ -78,25 +78,25 @@ double Particle::distance_squre(vector3d s)
     return dist ; 
 }
 
-double Particle::get_rho(std::set<Particle> &surrounding_particles, double h )
+double Particle::get_rho(std::set<int> &surrounding_particles, std::vector<Particle> &particles , parameter &p )
 {
     double ans = 0 ; 
 
-    for(auto &pa : surrounding_particles)
+    for(int pa : surrounding_particles)
     {
-        ans += pa.m * kernel_poly6(pos - pa.pos , h );
+        ans += p.m * kernel_poly6(pos - particles[pa].pos , p.h );
     }
 
     return ans ;
 }
 
-vector3d Particle::get_pressure(std::set<Particle> &surrounding_particle, parameter &p)
+vector3d Particle::get_pressure(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p )
 {
     vector3d ans ;
 
-    for(auto &pa : surrounding_particle)
+    for(int pa : surrounding_particles)
     {
-        ans += (kernel_spiky_gradient( pos - pa.pos , p.h ) * pa.m * (p.k * (pa.rho - p.rho0) + p.k*(rho - p.rho0)) / (2*pa.rho) ); 
+        ans += (kernel_spiky_gradient( pos - particles[pa].pos , p.h ) * p.m * (p.k * (particles[pa].rho - p.rho0) + p.k*(rho - p.rho0)) / (2*particles[pa].rho) ); 
     }
 
     ans = ans * -1 ; 
@@ -104,30 +104,30 @@ vector3d Particle::get_pressure(std::set<Particle> &surrounding_particle, parame
     return ans ; 
 }
 
-vector3d Particle::get_viscosity(std::set<Particle> &surrounding_particle, parameter &p)
+vector3d Particle::get_viscosity(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p )
 {
     vector3d f;
 
-    for(auto &pa : surrounding_particle)
+    for(int pa : surrounding_particles)
     {
-        f += ((pa.v - v) / pa.rho) * kernel_viscosity_laplacian(pos - pa.pos, p.h);
+        f += ((particles[pa].v - v) / particles[pa].rho) * kernel_viscosity_laplacian(pos - particles[pa].pos, p.h);
     }
 
-    f *= p.miu * m;
+    f *= p.miu * p.m;
     return f;
 }
 
-vector3d Particle::get_tension(std::set<Particle> &surrounding_particle, parameter &p)
+vector3d Particle::get_tension(std::set<int> &surrounding_particles, std::vector<Particle> &particles , parameter &p)
 {
     vector3d f;
 
     vector3d cs_grad; // n
     double cs_lap;
 
-    for (auto &pa : surrounding_particle)
+    for (auto &pa : surrounding_particles)
     {
-        cs_grad += kernal_poly6_gradient( pos - pa.pos , p.h ) * pa.m / pa.rho ;
-        cs_lap  += kernal_poly6_laplacian( pos - pa.pos , p.h ) * pa.m / pa.rho ; 
+        cs_grad += kernal_poly6_gradient( pos - particles[pa].pos , p.h ) * p.m / particles[pa].rho ;
+        cs_lap  += kernal_poly6_laplacian( pos - particles[pa].pos , p.h ) * p.m / particles[pa].rho ; 
     }
 
     f = (cs_grad / cs_grad.abs()) * (- p.sigma) * cs_lap ;
@@ -137,9 +137,8 @@ vector3d Particle::get_tension(std::set<Particle> &surrounding_particle, paramet
 
 double Particle::kernel_poly6(vector3d r , double h )
 {
-    double r_abs = r.abs();
-    if( h < r_abs ) return 0 ; 
-    return 315*(h*h - r_abs*r_abs)*(h*h - r_abs*r_abs)*(h*h - r_abs*r_abs) / ( 64*M_PI*pow(h,9) )  ;
+    if( h * h < r * r ) return 0 ; 
+    return 315*(h*h - r * r)*(h * h - r * r)*(h * h - r * r) / ( 64*M_PI*pow(h,9) )  ;
 }
 
 vector3d Particle::kernal_poly6_gradient(vector3d r , double h )

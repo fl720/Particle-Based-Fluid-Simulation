@@ -4,6 +4,7 @@
 
 struct parameter
 {
+    constexpr static double m = 1; // mass
     double h ; // kernel radius
     double rho0 ; // rest density
     double miu ; // viscosity
@@ -36,13 +37,12 @@ public:
 
     cubic_zone get_grid(double h);
     double distance_squre(vector3d s);
-    double get_rho(std::set<Particle> &surrounding_particles, double h );
-    void update(double dt , std::set<Particle> &surrounding_particles, parameter p, vector3d volume);
+    double get_rho(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
+    void update(std::set<int> &surrounding_particles, std::vector<Particle> &particles, double dt , parameter &p, vector3d volume);
 
     vector3d pos;
     vector3d v; // velocity
     double rho; 
-    constexpr static double m = 1; // mass
 
     bool operator < (const Particle &p) const
     {
@@ -51,9 +51,9 @@ public:
 
 private:
 
-    vector3d get_pressure(std::set<Particle> &surrounding_particle, parameter &p);
-    vector3d get_viscosity(std::set<Particle> &surrounding_particle, parameter &p);
-    vector3d get_tension(std::set<Particle> &surrounding_particle, parameter &p);
+    vector3d get_pressure(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
+    vector3d get_viscosity(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
+    vector3d get_tension(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
 
     double kernel_poly6(vector3d r ,double h);
     vector3d kernal_poly6_gradient(vector3d r , double h );
