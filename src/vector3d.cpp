@@ -58,6 +58,11 @@ vector3d vector3d::operator * (double c)
     return vector3d(x * c, y * c, z * c);
 }
 
+double vector3d::operator * (const vector3d &c)
+{
+    return x * c.x + y * c.y + z * c.z;
+}
+
 vector3d vector3d::operator / (double c)
 {
     return vector3d(x / c, y / c, z / c);

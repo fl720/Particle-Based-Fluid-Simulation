@@ -144,13 +144,12 @@ double Particle::kernel_poly6(vector3d r , double h )
 vector3d Particle::kernal_poly6_gradient(vector3d r , double h )
 {
     double r_abs = r.abs();
-    return r * -945.0/ ( 32.0 * M_PI * pow(h,9) ) * pow((h*h - r_abs * r_abs ), 2) ;
+    return r * -945.0 / ( 32.0 * M_PI * pow(h,9) ) * pow((h*h - r_abs * r_abs ), 2) ;
 }
 
 double Particle::kernal_poly6_laplacian(vector3d r , double h )
 {
-    double r_abs = r.abs() ; 
-    return - 945.0 / ( 32.0 * M_PI * pow(h, 9) ) * ( r_abs * r_abs - h * h ) * ( 4 * r_abs * r_abs + 3 * (r_abs * r_abs - h * h )); 
+    return 945.0 / ( 32.0 * M_PI * pow(h, 9) ) * (h * h - r * r) * ( r * r * 7 - 3 * h * h ); 
 }
 
 vector3d Particle::kernel_spiky_gradient(vector3d r , double h )

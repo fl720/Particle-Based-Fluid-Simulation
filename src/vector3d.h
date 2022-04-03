@@ -13,6 +13,7 @@ struct vector3d
     vector3d operator - (vector3d v);
     vector3d operator - (vector3d v) const;
     vector3d operator * (double c);
+    double operator * (const vector3d &c);
     vector3d operator / (double c);
     vector3d& operator += (vector3d v);
     vector3d& operator *= (double c);
