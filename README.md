@@ -12,6 +12,9 @@ python3 SPH_painter.py data.bin
 example.png
 
 ## TODO
-- supporting multi thread calculation
+- Fixing bugs in calculation: updating of Position & Velocity should be executed consistently.
+- Adding JSON support.
+- Adding 2D support.
+- Adding multi thread support.
 
 ![Frame](Frame.png "Frame")
