@@ -6,14 +6,7 @@ class SPH_handle
     set_export_file();
     void run(unsigned int step );
 
-    FILE * fp;
-    unsigned int total_step; 
-    unsigned int particle_number;
-    double dt ; 
-    vector3d volume;
-    parameter para;
-    std::vector<Particle> particles;
-    std::map<cubic_zone , std::set<unsigned int> > particle_list;
+    ...
 }
 
 class parameter
@@ -45,26 +38,10 @@ class Particle
 
     cubic_zone get_grid(double h);
     double distance_squre(vector3d s);
-    double get_rho(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
-    void update(std::set<int> &surrounding_particles, std::vector<Particle> &particles, double dt , parameter &p, vector3d volume);
+    double get_rho(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
+    void update(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, double dt , parameter &p, vector3d volume);
 
-    vector3d pos;
-    vector3d v;
-    double rho; 
-    constexpr static double m = 1;
-
-    bool operator < (const Particle &p) const;
-
-    vector3d get_pressure(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
-    vector3d get_viscosity(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
-    vector3d get_tension(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
-
-    double kernel_poly6(vector3d r ,double h);
-    vector3d kernal_poly6_gradient(vector3d r , double h );
-    double kernal_poly6_laplacian(vector3d r , double h );
-    vector3d kernel_spiky_gradient(vector3d r, double h);
-    double kernel_viscosity_laplacian(vector3d r, double h);
-
+    ...
 }
 
 class vector3d
