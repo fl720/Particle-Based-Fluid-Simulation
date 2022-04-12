@@ -17,7 +17,7 @@ Particle::Particle(vector3d input_pos)
 {
     pos = input_pos;
 
-    v = vector3d() ; 
+    v = vector3d(1,0,0) ; 
 }
 
 void Particle::update( std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles,  double dt, parameter &p , vector3d volume) 

@@ -41,7 +41,7 @@ while size_per_batch == len(data_b) :
     ax3.set_xlim(x_range)
     ax3.set_ylim(y_range)
     ax3.set_zlim(z_range)
-    ax3.scatter(x, y, z)
+    ax3.scatter(x, y, z, alpha=0.1)
     plt.pause(dt)
     
     data_b      = f.read(size_per_batch)
