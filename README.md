@@ -9,7 +9,8 @@ You could compile code with `sh compile.sh` and modify parameters in `input.txt`
 python3 SPH_painter.py data.bin
 ```
 
-example.png
+![Simulation of 5000 particles](simulation_result.png "simulation")
+
 
 ## TODO
 - Fixing bugs in calculation: updating of Position & Velocity should be executed consistently.
