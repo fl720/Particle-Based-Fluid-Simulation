@@ -6,9 +6,9 @@ plt.ion()
 f = open("data.bin", 'rb')
 
 dt = 0.001
-x_range = (0, 12)
-y_range = (0, 9)
-z_range = (0, 9)
+x_range = (0, 0.1)
+y_range = (0, 0.1)
+z_range = (0, 0.1)
 
 size_b          = f.read(4)
 size            = (unpack('I', size_b))[0] # int
@@ -22,7 +22,7 @@ ax3 = plt.axes(projection = '3d') # do not need generate a new canvas every time
 step_cnt = 0
 while size_per_batch == len(data_b) :
 
-    print(step_cnt)
+    # print(step_cnt)
     step_cnt += 1 
     
     data        = unpack('ddd' * size , data_b) # tuple
@@ -31,6 +31,10 @@ while size_per_batch == len(data_b) :
     x           = data[0 : : 3]
     y           = data[1 : : 3]
     z           = data[2 : : 3]
+
+    # print(x)
+    # print(y)
+    # print(z)
     
     plt.cla()
     # selected coordinate

@@ -37,8 +37,8 @@ public:
 
     cubic_zone get_grid(double h);
     double distance_squre(vector3d s);
-    double get_rho(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
-    void update(std::set<int> &surrounding_particles, std::vector<Particle> &particles, double dt , parameter &p, vector3d volume);
+    double get_rho(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
+    void update(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, double dt , parameter &p, vector3d volume);
 
     vector3d pos;
     vector3d v; // velocity
@@ -51,9 +51,9 @@ public:
 
 private:
 
-    vector3d get_pressure(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
-    vector3d get_viscosity(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
-    vector3d get_tension(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
+    vector3d get_pressure(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
+    vector3d get_viscosity(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
+    vector3d get_tension(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
 
     double kernel_poly6(vector3d r ,double h);
     vector3d kernal_poly6_gradient(vector3d r , double h );

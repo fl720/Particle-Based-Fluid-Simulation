@@ -1,7 +1,7 @@
 cd src
 
 echo "Now start compile."
-g++ *cpp -o main -std=c++17
+g++ *cpp -o main -std=c++17 -O3
 if [ $? != 0 ]
 then
     echo "Compile Error!"
@@ -12,6 +12,7 @@ echo "Compile done."
 mv main ../
 
 cd ..
-echo "Now start running..."
-./main
-echo "Execute done."
+
+# echo "Now start running..."
+# ./main
+# echo "Execute done."

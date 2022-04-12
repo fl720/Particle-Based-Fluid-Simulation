@@ -17,16 +17,22 @@ void SPH_handle::set_export_file( const char * path )
 
 void SPH_handle::run(unsigned int step )
 {
+    stopwatch timer ; 
+    timer.start() ; 
+    
     total_step += step ; 
     for( int i = 0 ; i < step ; i++) 
     {
-        if(i % 100 == 0) std::cout << i << std::endl;
-
-        std::vector< std::set< int > >  particle_collection ; 
-        
-        for(int j = 0 ; j < particle_number ; j++)
+        if(i % 100 == 0) 
         {
-            std::set<int> surrounding_particles;
+            std::cout << "Step: " << i << "\t" << "Elapse:" << timer.elapse() << "ms" << std::endl;
+        }
+
+        std::vector< std::set<unsigned int> >  particle_collection ; 
+        
+        for(unsigned int j = 0 ; j < particle_number ; j++)
+        {
+            std::set<unsigned int> surrounding_particles;
             cubic_zone cubic[7];
             cubic[0] = particles[j].get_grid(para.h) ; 
             for(int k = 1 ; k < 7; k++) cubic[k] = cubic[0];
@@ -41,18 +47,20 @@ void SPH_handle::run(unsigned int step )
                 for(unsigned int p : particle_list[cubic[k]] )
                 {
                     if( particles[j].distance_squre(particles[p].pos) < para.h * para.h ) 
+                    {
                         surrounding_particles.insert( p ) ;   
+                    }
                 }
             }   
             particle_collection.push_back( surrounding_particles ) ; 
-            particles[j].rho = particles[j].get_rho(surrounding_particles,particles, para ); 
+            particles[j].rho = particles[j].get_rho(surrounding_particles, particles, para ); 
         }
 
-        for(int j = 0 ; j < particle_number; j++ )
+        for(unsigned int j = 0 ; j < particle_number; j++ )
         {   
-            particle_collection[j].erase(j) ;
+            // particle_collection[j].erase(j) ;
             particle_list[particles[j].get_grid(para.h)].erase(j) ;
-            particles[j].update(particle_collection[j],particles, dt,  para , volume); 
+            particles[j].update(particle_collection[j], particles, dt,  para , volume); 
             particle_list[particles[j].get_grid(para.h)].insert(j) ; 
             fwrite( &(particles[j].pos), sizeof(particles[j].pos), 1, fp); 
         }
@@ -104,4 +112,20 @@ SPH_handle::SPH_handle( std::string filename) {
 SPH_handle::~SPH_handle() {
     fwrite(&total_step, sizeof(total_step), 1, fp); 
     fclose(fp) ; 
+}
+
+
+void stopwatch::start()
+{
+    start_time = std::chrono::system_clock::now() ; 
+}
+
+float stopwatch::elapse()
+{
+    std::chrono::time_point<std::chrono::system_clock> current_time = std::chrono::system_clock::now() ;
+    
+    using namespace std::literals;
+    float elapse = (current_time - start_time )  / 1ms ; 
+
+    return elapse;
 }

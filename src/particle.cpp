@@ -1,5 +1,6 @@
 #include "particle.h"
 #include <cmath>
+#include <cfloat>
 #define _USE_MATH_DEFINES
 
 cubic_zone Particle::get_grid(double h) 
@@ -19,17 +20,17 @@ Particle::Particle(vector3d input_pos)
     v = vector3d() ; 
 }
 
-void Particle::update( std::set<int> &surrounding_particles, std::vector<Particle> &particles,  double dt, parameter &p , vector3d volume) 
+void Particle::update( std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles,  double dt, parameter &p , vector3d volume) 
 {  
     // accelerate
     vector3d g(0, 0, -p.g);
 
-    vector3d f = get_pressure(surrounding_particles, particles , p)
-        + get_viscosity(surrounding_particles, particles , p)
-        + get_tension(surrounding_particles, particles , p) 
-        + (g * rho) ;
+    vector3d fp = get_pressure(surrounding_particles, particles , p);
+    vector3d fv = get_viscosity(surrounding_particles, particles , p);
+    vector3d ft = get_tension(surrounding_particles, particles , p) ;
+    vector3d fg = (g * rho) ;
     
-    vector3d a  = f / rho ;
+    vector3d a  = (fp + fv + ft + fg) / rho ;
     
     // move
     pos         = pos + v * dt + a * dt * dt / 2; 
@@ -73,12 +74,10 @@ void Particle::update( std::set<int> &surrounding_particles, std::vector<Particl
 
 double Particle::distance_squre(vector3d s) 
 {
-    double dist = (s.x - pos.x) * (s.x - pos.x) + (s.y - pos.y) * (s.x - pos.y) + (s.z - pos.z) * (s.z - pos.z); 
-    
-    return dist ; 
+    return (s - pos) * (s - pos);
 }
 
-double Particle::get_rho(std::set<int> &surrounding_particles, std::vector<Particle> &particles , parameter &p )
+double Particle::get_rho(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles , parameter &p )
 {
     double ans = 0 ; 
 
@@ -90,7 +89,7 @@ double Particle::get_rho(std::set<int> &surrounding_particles, std::vector<Parti
     return ans ;
 }
 
-vector3d Particle::get_pressure(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p )
+vector3d Particle::get_pressure(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p )
 {
     vector3d ans ;
 
@@ -104,7 +103,7 @@ vector3d Particle::get_pressure(std::set<int> &surrounding_particles, std::vecto
     return ans ; 
 }
 
-vector3d Particle::get_viscosity(std::set<int> &surrounding_particles, std::vector<Particle> &particles, parameter &p )
+vector3d Particle::get_viscosity(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p )
 {
     vector3d f;
 
@@ -117,12 +116,12 @@ vector3d Particle::get_viscosity(std::set<int> &surrounding_particles, std::vect
     return f;
 }
 
-vector3d Particle::get_tension(std::set<int> &surrounding_particles, std::vector<Particle> &particles , parameter &p)
+vector3d Particle::get_tension(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles , parameter &p)
 {
     vector3d f;
 
     vector3d cs_grad; // n
-    double cs_lap;
+    double cs_lap = 0;
 
     for (auto &pa : surrounding_particles)
     {
@@ -130,7 +129,8 @@ vector3d Particle::get_tension(std::set<int> &surrounding_particles, std::vector
         cs_lap  += kernal_poly6_laplacian( pos - particles[pa].pos , p.h ) * p.m / particles[pa].rho ; 
     }
 
-    f = (cs_grad / cs_grad.abs()) * (- p.sigma) * cs_lap ;
+    if(cs_grad.abs() > 0) f = (cs_grad / cs_grad.abs()) * (- p.sigma) * cs_lap ;
+
 
     return f;
 }
@@ -143,25 +143,26 @@ double Particle::kernel_poly6(vector3d r , double h )
 
 vector3d Particle::kernal_poly6_gradient(vector3d r , double h )
 {
-    double r_abs = r.abs();
-    return r * -945.0 / ( 32.0 * M_PI * pow(h,9) ) * pow((h*h - r_abs * r_abs ), 2) ;
+    if( h * h < r * r ) return vector3d() ; 
+    return r * -945.0 / ( 32.0 * M_PI * pow(h,9) ) * pow((h*h - r * r ), 2) ;
 }
 
 double Particle::kernal_poly6_laplacian(vector3d r , double h )
 {
+    if( h * h < r * r ) return 0 ; 
     return 945.0 / ( 32.0 * M_PI * pow(h, 9) ) * (h * h - r * r) * ( r * r * 7 - 3 * h * h ); 
 }
 
 vector3d Particle::kernel_spiky_gradient(vector3d r , double h )
 {
     double r_abs = r.abs();
-    if ( h < r_abs ) return vector3d();
+    if ( r_abs <= 1e-7 || h < r_abs ) return vector3d();
     return r * (-45*(h - r_abs)*(h - r_abs) / (r_abs * M_PI * pow(h,6))) ;
 }
 
 double Particle::kernel_viscosity_laplacian(vector3d r , double h )
 {
-    if ( h < r.abs()) return 0;
+    if( h * h < r * r ) return 0 ; 
     return 45 * (h - r.abs()) / (M_PI * pow(h, 6));
 }
 
