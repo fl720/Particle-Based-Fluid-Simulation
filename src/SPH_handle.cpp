@@ -29,10 +29,13 @@ void SPH_handle::run(unsigned int step )
         }
 
         std::vector< std::set<unsigned int> >  particle_collection ; 
+
         
+
         for(unsigned int j = 0 ; j < particle_number ; j++)
         {
             std::set<unsigned int> surrounding_particles;
+
             cubic_zone cubic[7];
             cubic[0] = particles[j].get_grid(para.h) ; 
             for(int k = 1 ; k < 7; k++) cubic[k] = cubic[0];
@@ -48,7 +51,7 @@ void SPH_handle::run(unsigned int step )
                 {
                     if( particles[j].distance_squre(particles[p].pos) < para.h * para.h ) 
                     {
-                        surrounding_particles.insert( p ) ;   
+                        surrounding_particles.insert( p ) ; 
                     }
                 }
             }   
@@ -60,9 +63,14 @@ void SPH_handle::run(unsigned int step )
         {   
             // particle_collection[j].erase(j) ;
             particle_list[particles[j].get_grid(para.h)].erase(j) ;
-            particles[j].update(particle_collection[j], particles, dt,  para , volume); 
+            particles[j].update(particle_collection[j], particles, tem_par, dt,  para , volume); 
             particle_list[particles[j].get_grid(para.h)].insert(j) ; 
             fwrite( &(particles[j].pos), sizeof(particles[j].pos), 1, fp); 
+
+            if (j == particle_number -1 ) 
+            {                
+                tem_par = particles ; 
+            }
         }
     }
 
@@ -105,6 +113,7 @@ SPH_handle::SPH_handle( std::string filename) {
 
         Particle tmp( vector3d(le_pos, wi_pos, he_pos) );
         particles.push_back(tmp); // tmp -> it
+        tem_par.push_back(tmp)  ;
         particle_list[tmp.get_grid(para.h)].insert(it);
     }
 }
@@ -124,7 +133,7 @@ float stopwatch::elapse()
 {
     std::chrono::time_point<std::chrono::system_clock> current_time = std::chrono::system_clock::now() ;
     
-    using namespace std::literals;
+    using namespace std::chrono_literals ;
     float elapse = (current_time - start_time )  / 1ms ; 
 
     return elapse;

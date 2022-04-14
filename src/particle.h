@@ -38,7 +38,7 @@ public:
     cubic_zone get_grid(double h);
     double distance_squre(vector3d s);
     double get_rho(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
-    void update(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, double dt , parameter &p, vector3d volume);
+    void update(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, std::vector<Particle> &tem_par,double dt , parameter &p, vector3d volume);
 
     vector3d pos;
     vector3d v; // velocity

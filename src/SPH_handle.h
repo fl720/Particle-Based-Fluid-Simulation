@@ -33,6 +33,7 @@ class SPH_handle
         unsigned int particle_number;
 
         std::vector<Particle> particles;
+        std::vector<Particle> tem_par  ;
         std::map<cubic_zone , std::set<unsigned int> > particle_list; // spatial hash 
 
 };

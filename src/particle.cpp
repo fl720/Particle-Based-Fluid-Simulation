@@ -1,7 +1,9 @@
 #include "particle.h"
 #include <cmath>
 #include <cfloat>
+#include <iostream>
 #define _USE_MATH_DEFINES
+#define M_PI 3.1415926
 
 cubic_zone Particle::get_grid(double h) 
 {
@@ -20,14 +22,14 @@ Particle::Particle(vector3d input_pos)
     v = vector3d(1,0,0) ; 
 }
 
-void Particle::update( std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles,  double dt, parameter &p , vector3d volume) 
+void Particle::update( std::set<unsigned int> &surrounding_particles,std::vector<Particle> &particles, std::vector<Particle> &tem_par, double dt, parameter &p , vector3d volume) 
 {  
     // accelerate
     vector3d g(0, 0, -p.g);
 
-    vector3d fp = get_pressure(surrounding_particles, particles , p);
-    vector3d fv = get_viscosity(surrounding_particles, particles , p);
-    vector3d ft = get_tension(surrounding_particles, particles , p) ;
+    vector3d fp = get_pressure(surrounding_particles, tem_par , p);
+    vector3d fv = get_viscosity(surrounding_particles, tem_par , p);
+    vector3d ft = get_tension(surrounding_particles, tem_par , p) ;
     vector3d fg = (g * rho) ;
     
     vector3d a  = (fp + fv + ft + fg) / rho ;
@@ -123,8 +125,16 @@ vector3d Particle::get_tension(std::set<unsigned int> &surrounding_particles, st
     vector3d cs_grad; // n
     double cs_lap = 0;
 
+
+
     for (auto &pa : surrounding_particles)
     {
+
+        if( (particles[pa].pos - pos) * (particles[pa].pos - pos) > p.h * p.h)
+        {
+            std::cout << "error" << std::endl ;
+        }
+
         cs_grad += kernal_poly6_gradient( pos - particles[pa].pos , p.h ) * p.m / particles[pa].rho ;
         cs_lap  += kernal_poly6_laplacian( pos - particles[pa].pos , p.h ) * p.m / particles[pa].rho ; 
     }
