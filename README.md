@@ -19,3 +19,6 @@ python3 SPH_painter.py data.bin
 - Adding multi thread support.
 
 ![Frame](Frame.png "Frame")
+
+
+<a target="_blank" rel="noopener noreferrer" href="/fl720/NS-Equation_practice_coding/blob/main/Exp2_simulation_begin.png"><img src="/fl720/NS-Equation_practice_coding/raw/main/Exp2_simulation_begin.png" alt="simulation of diffusion equation_begin" title="simulation" style="max-width: 100%;"></a>
