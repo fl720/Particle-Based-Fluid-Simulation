@@ -1,4 +1,6 @@
 #include "SPH_handle.h"
+#include "json.hpp" 
+
 #include <iostream>
 
 void SPH_handle::set_export_file( const char * path )
@@ -15,13 +17,12 @@ void SPH_handle::set_export_file( const char * path )
     return ;
 }
 
-void SPH_handle::run(unsigned int step )
+void SPH_handle::run()
 {
     stopwatch timer ; 
     timer.start() ; 
     
-    total_step += step ; 
-    for( int i = 0 ; i < step ; i++) 
+    for( int i = 0 ; i < total_step ; i++) 
     {
         if(i % 100 == 0) 
         {
@@ -29,8 +30,6 @@ void SPH_handle::run(unsigned int step )
         }
 
         std::vector< std::set<unsigned int> >  particle_collection ; 
-
-        
 
         for(unsigned int j = 0 ; j < particle_number ; j++)
         {
@@ -58,6 +57,8 @@ void SPH_handle::run(unsigned int step )
             particle_collection.push_back( surrounding_particles ) ; 
             particles[j].rho = particles[j].get_rho(surrounding_particles, particles, para ); 
         }
+        
+        tem_par = particles ; 
 
         for(unsigned int j = 0 ; j < particle_number; j++ )
         {   
@@ -66,11 +67,6 @@ void SPH_handle::run(unsigned int step )
             particles[j].update(particle_collection[j], particles, tem_par, dt,  para , volume); 
             particle_list[particles[j].get_grid(para.h)].insert(j) ; 
             fwrite( &(particles[j].pos), sizeof(particles[j].pos), 1, fp); 
-
-            if (j == particle_number -1 ) 
-            {                
-                tem_par = particles ; 
-            }
         }
     }
 
@@ -84,23 +80,26 @@ SPH_handle::SPH_handle( std::string filename) {
     double le;
 
     std::ifstream input_file(filename);
-    
+
     if (input_file.good() )
     {
-        input_file >> particle_number;
-        input_file >> he; 
-        input_file >> wi;
-        input_file >> le; 
-        input_file >> dt;
-        input_file >> para.h;
-        input_file >> para.rho0; 
-        input_file >> para.miu ; 
-        input_file >> para.k ;
-        input_file >> para.sigma ;
-        input_file >> para.g ; 
+        nlohmann::json j ; 
+        input_file >> j ;  
+
+        total_step      = j["step"] ; 
+        particle_number = j["number"] ; 
+        he              = j["container"]["height"] ; 
+        wi              = j["container"]["width"] ;
+        le              = j["container"]["length"] ; 
+        dt              = j["dt"];
+        para.h          = j["kernel_radius"];
+        para.rho0       = j["rest_density"];
+        para.miu        = j["viscosity"];
+        para.k          = j["gas_constant"];
+        para.sigma      = j["tension_coefficient"] ;
+        para.g          = j["gravity"] ; 
     }
 
-    total_step  = 1 ; 
     fp          = nullptr;
     
     volume      = vector3d(le, wi, he) ; 
@@ -113,13 +112,11 @@ SPH_handle::SPH_handle( std::string filename) {
 
         Particle tmp( vector3d(le_pos, wi_pos, he_pos) );
         particles.push_back(tmp); // tmp -> it
-        tem_par.push_back(tmp)  ;
         particle_list[tmp.get_grid(para.h)].insert(it);
     }
 }
 
 SPH_handle::~SPH_handle() {
-    fwrite(&total_step, sizeof(total_step), 1, fp); 
     fclose(fp) ; 
 }
 

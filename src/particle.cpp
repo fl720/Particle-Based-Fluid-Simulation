@@ -3,7 +3,10 @@
 #include <cfloat>
 #include <iostream>
 #define _USE_MATH_DEFINES
-#define M_PI 3.1415926
+
+#ifndef M_PI
+    #define M_PI 3.1415926
+#endif
 
 cubic_zone Particle::get_grid(double h) 
 {
@@ -19,7 +22,7 @@ Particle::Particle(vector3d input_pos)
 {
     pos = input_pos;
 
-    v = vector3d(1,0,0) ; 
+    v = vector3d(0.1,0,0) ; 
 }
 
 void Particle::update( std::set<unsigned int> &surrounding_particles,std::vector<Particle> &particles, std::vector<Particle> &tem_par, double dt, parameter &p , vector3d volume) 

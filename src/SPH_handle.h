@@ -7,6 +7,7 @@
 #include <string>
 #include <chrono>
 
+#include "vector3d.h"
 #include "particle.h"
 
 class SPH_handle
@@ -18,15 +19,15 @@ class SPH_handle
         ~SPH_handle();
 
         void set_export_file(const char * path);
-        void run(unsigned int step );
+        void run( );
 
     private:
 
         FILE * fp;
-        unsigned int total_step; 
 
         double dt ; 
         vector3d volume;
+        unsigned int total_step; 
 
         parameter para;
 

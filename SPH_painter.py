@@ -1,23 +1,26 @@
 from struct import unpack
 import numpy as np
 from matplotlib import pyplot as plt
-plt.ion()
+import json
 
-f = open("data.bin", 'rb')
+config  = open("input.json")
+load    = json.load(config)
 
-dt = 0.001
-x_range = (0, 0.1)
-y_range = (0, 0.1)
-z_range = (0, 0.1)
+dt      = load["dt"]
+x_range = (0, load["container"]["length"])
+y_range = (0, load["container"]["width"] )
+z_range = (0, load["container"]["height"] )
 
-size_b          = f.read(4)
-size            = (unpack('I', size_b))[0] # int
+f       = open("data.bin", 'rb')
+size_b  = f.read(4)
+size    = (unpack('I', size_b))[0] # int
 
 size_per_batch  = size * 3 * 8
 data_b          = f.read(size_per_batch)
 
 x,y,z = [],[],[]
 ax3 = plt.axes(projection = '3d') # do not need generate a new canvas every time
+plt.ion()
 
 step_cnt = 0
 while size_per_batch == len(data_b) :
@@ -31,10 +34,6 @@ while size_per_batch == len(data_b) :
     x           = data[0 : : 3]
     y           = data[1 : : 3]
     z           = data[2 : : 3]
-
-    # print(x)
-    # print(y)
-    # print(z)
     
     plt.cla()
     # selected coordinate

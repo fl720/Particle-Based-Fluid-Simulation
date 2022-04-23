@@ -1,3 +1,6 @@
+#ifndef VECTOR3D
+#define VECTOR3D
+
 struct vector3d
 {   
     vector3d();
@@ -19,3 +22,6 @@ struct vector3d
     vector3d& operator *= (double c);
 
 };
+
+
+#endif

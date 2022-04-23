@@ -1,3 +1,6 @@
+#ifndef PARTICLE
+#define PARTICLE
+
 #include <vector> 
 #include <set>
 #include "vector3d.h"
@@ -62,3 +65,5 @@ private:
     double kernel_viscosity_laplacian(vector3d r, double h);
 
 };
+
+#endif
