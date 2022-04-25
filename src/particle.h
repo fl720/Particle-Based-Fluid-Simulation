@@ -14,6 +14,10 @@ struct parameter
     double k ; // ideal gas constant
     double sigma ; // tension coefficient
     double g ;  //gravitational constant
+
+    double powh9  ; 
+    double powh6  ;
+
 };
 
 struct cubic_zone 
@@ -58,11 +62,11 @@ private:
     vector3d get_viscosity(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
     vector3d get_tension(std::set<unsigned int> &surrounding_particles, std::vector<Particle> &particles, parameter &p);
 
-    double kernel_poly6(vector3d r ,double h);
-    vector3d kernal_poly6_gradient(vector3d r , double h );
-    double kernal_poly6_laplacian(vector3d r , double h );
-    vector3d kernel_spiky_gradient(vector3d r, double h);
-    double kernel_viscosity_laplacian(vector3d r, double h);
+    double kernel_poly6(vector3d r ,parameter p);
+    vector3d kernal_poly6_gradient(vector3d r , parameter p );
+    double kernal_poly6_laplacian(vector3d r , parameter p );
+    vector3d kernel_spiky_gradient(vector3d r, parameter p);
+    double kernel_viscosity_laplacian(vector3d r, parameter p);
 
 };
 

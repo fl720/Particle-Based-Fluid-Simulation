@@ -2,6 +2,7 @@
 #include "json.hpp" 
 
 #include <iostream>
+#include <cmath>
 
 void SPH_handle::set_export_file( const char * path )
 {
