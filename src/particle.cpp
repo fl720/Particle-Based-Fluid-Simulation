@@ -27,11 +27,6 @@ Particle::Particle(vector3d input_pos)
 
 void Particle::update( std::set<unsigned int> &surrounding_particles,std::vector<Particle> &particles, std::vector<Particle> &tem_par, double dt, parameter &p , vector3d volume) 
 {  
-    //pre-calculation
-    
-        p.powh9 = pow( p.h , 9 ) ;  
-        p.powh6 = pow( p.h , 6 ) ; 
-
     // accelerate
     vector3d g(0, 0, -p.g);
 
@@ -153,34 +148,34 @@ vector3d Particle::get_tension(std::set<unsigned int> &surrounding_particles, st
     return f;
 }
 
-double Particle::kernel_poly6(vector3d r , parameter p )
+double Particle::kernel_poly6(vector3d r , parameter &p )
 {
-    if( p.h * p.h < r * r ) return 0 ; 
-    return 315*(p.h*p.h - r * r)*(p.h * p.h - r * r)*(p.h * p.h - r * r) / ( 64*M_PI*p.powh9 )  ;
+    if( p.powh2 < r * r ) return 0 ; 
+    return 315*(p.powh2 - r * r)*(p.powh2- r * r)*(p.powh2 - r * r) / ( 64*M_PI*p.powh9 )  ;
 }
 
-vector3d Particle::kernal_poly6_gradient(vector3d r , parameter p  )
+vector3d Particle::kernal_poly6_gradient(vector3d r , parameter &p  )
 {
-    if( p.h * p.h < r * r ) return vector3d() ; 
-    return r * -945.0 / ( 32.0 * M_PI * p.powh9 ) * pow((p.h*p.h - r * r ), 2) ;
+    if( p.powh2 < r * r ) return vector3d() ; 
+    return r * -945.0 / ( 32.0 * M_PI * p.powh9 ) * pow((p.powh2 - r * r ), 2) ;
 }
 
-double Particle::kernal_poly6_laplacian(vector3d r , parameter p )
+double Particle::kernal_poly6_laplacian(vector3d r , parameter &p )
 {
-    if( p.h * p.h < r * r ) return 0 ; 
-    return 945.0 / ( 32.0 * M_PI * p.powh9 ) * (p.h * p.h - r * r) * ( r * r * 7 - 3 * p.h * p.h ); 
+    if( p.powh2 < r * r ) return 0 ; 
+    return 945.0 / ( 32.0 * M_PI * p.powh9 ) * (p.powh2 - r * r) * ( r * r * 7 - 3 * p.powh2 ); 
 }
 
-vector3d Particle::kernel_spiky_gradient(vector3d r , parameter p )
+vector3d Particle::kernel_spiky_gradient(vector3d r , parameter &p )
 {
     double r_abs = r.abs();
     if ( r_abs <= 1e-7 || p.h < r_abs ) return vector3d();
     return r * (-45*(p.h - r_abs)*(p.h - r_abs) / (r_abs * M_PI * p.powh6)) ;
 }
 
-double Particle::kernel_viscosity_laplacian(vector3d r , parameter p )
+double Particle::kernel_viscosity_laplacian(vector3d r , parameter &p )
 {
-    if( p.h * p.h < r * r ) return 0 ; 
+    if( p.powh2 < r * r ) return 0 ; 
     return 45 * (p.h - r.abs()) / (M_PI * p.powh6);
 }
 

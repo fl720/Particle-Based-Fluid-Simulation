@@ -99,6 +99,12 @@ SPH_handle::SPH_handle( std::string filename) {
         para.k          = j["gas_constant"];
         para.sigma      = j["tension_coefficient"] ;
         para.g          = j["gravity"] ; 
+
+        //pre-calculation
+        
+        para.powh9 = pow( para.h , 9 ) ;  
+        para.powh6 = pow( para.h , 6 ) ; 
+        para.powh2 = para.h * para.h ; 
     }
 
     fp          = nullptr;
