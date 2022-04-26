@@ -27,6 +27,7 @@ Particle::Particle(vector3d input_pos)
 
 void Particle::update( std::set<unsigned int> &surrounding_particles,std::vector<Particle> &particles, std::vector<Particle> &tem_par, double dt, parameter &p , vector3d volume) 
 {  
+    
     // accelerate
     vector3d g(0, 0, -p.g);
 
