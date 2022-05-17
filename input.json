@@ -1,6 +1,6 @@
 {
-    "step" : 500,
-    "number":1000, 
+    "step" : 700,
+    "number":5000, 
     "dt" :  0.001,   
     "container":
     {
