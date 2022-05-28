@@ -19,4 +19,4 @@ End of the simulation:
 - Adding animation drawer.
 - Adding multi thread support.
 
-![Frame](Frame.png "Frame")
+![Frame](sim_pic/Frame.png "Frame")
