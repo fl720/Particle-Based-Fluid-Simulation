@@ -9,10 +9,10 @@ You could compile code with `sh compile.sh` and modify parameters in `input.txt`
 python3 SPH_painter.py data.bin
 ```
 Start of the simulation:
-![Simulation of 5000 particles](simulation_begin.png "simulation")
+![Simulation of 5000 particles](sim_pic/simulation_begin.png "simulation")
 
 End of the simulation: 
-![Simulation of 5000 particles](simulation_result.png "simulation")
+![Simulation of 5000 particles](sim_pic/simulation_result.png "simulation")
 
 ## TODO
 - Adding 2D support.
