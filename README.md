@@ -5,7 +5,7 @@
 You could compile code with `sh compile.sh` and modify parameters in `input.txt`, then execute following code:
 
 ```
-./main input.txt data.bin
+./main input.json data.bin
 python3 SPH_painter.py data.bin
 ```
 Start of the simulation:
